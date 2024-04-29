@@ -1,0 +1,83 @@
+---
+title: "Can NAU Basketball Beat the Competition"
+author: "Jacob Shigeta"
+date: "2024-03-19"
+output: pdf_document
+---
+```{r, include=FALSE}
+library(tidyverse)
+library(knitr)
+
+# Combining the Coaches and Basketball DFs
+Coaches <- read.csv("~/NAUSportsTeams/data/Coaches.csv")
+Basketball <- read.csv("~/NAUSportsTeams/data/NAUBasketball.csv")
+Players <- read.csv("~/NAUSportsTeams/data/Players.csv")
+Games <- read.csv("~/NAUSportsTeams/data/Games.csv")
+
+Team_Stats <- Basketball %>%
+  left_join(Coaches, by = c("Year" = "Year", "Team" = "Team")) %>%
+  select(-c("X.y", "X.x"))
+
+```
+
+```{r, include=FALSE}
+library(dplyr)
+
+Win_Loss <- Games %>%
+  select(c("Team", "W.L"))
+
+Win_Loss[] <- lapply(Win_Loss, function(x)
+  {x[grepl("l", tolower(x), fixed = TRUE)] <- "L"; x})
+
+Win_Loss["W.L"][Win_Loss["W.L"] == "W (OT)"] <- "W"
+Win_Loss["W.L"][Win_Loss["W.L"] == "W (2 OT)"] <- "W"
+
+WL <- table(Win_Loss$W.L, Win_Loss$Team)
+rownames(WL) <- c("Loss", "Win")
+WL <- addmargins(WL)
+```
+
+\begin{center}
+\large \textbf{Abstract}
+\end{center}
+	This project delves into the performance of both the men's and women's basketball teams at Northern Arizona University over the past decade. Utilizing Python Selenium, data encompassing team statistics, player averages, head coaches, game statistics, and game outcomes were collected from the NAU Athletics website. The primary objective is to show how well the teams did over the past ten years as well as any possible changes to the teams making them perform better or worse than the previous seasons. Some of these changes include identifying the star player and the coach at the time as longitudinal data to highlight any significant shifts in team performance. This project aims to facilitate a deeper understanding of NAU Basketball performance dynamics.
+	
+\pagebreak
+
+## Introduction
+  The data that was collected involves the NAU men's and women's basketball teams, more specifically, the stats for the season, the coach for that season, the player's stats, and the game stats. I have attached part of each data frame below.
+\scriptsize
+```{r, echo=FALSE}
+kable(t(head(Team_Stats)), caption = "Transposed Men's and Women's Team Stats")
+```
+
+```{r, echo=FALSE}
+kable(head(Games), caption = "Men's and Women's Game Stats")
+```
+
+```{r, echo=FALSE}
+kable(head(Players), caption = "Men's and Women's Player Stats")
+```
+
+\normalsize
+I am very interested in this data because, since I am a part of the NAU Marching and Pep Band and have been for my entire time here at NAU, we go to a lot of the sports events, mainly Football, Volleyball, and Basketball. Therefore, I get to see most, if not all, of the home games for each team for each season so I see how they do on the field/court. I have really noticed that, for basketball, the men's team usually does worse than the women's team and that has been consistent for the past three years where I have actually been to games. This got me wondering if this trend has been accurate throughout the years at NAU, or if it just started to happen for a reason that I can hopefully prove.
+
+## Methods
+  To scrape the data, I had to learn how to use Python Selenium to do the scraping and Pandas to save it to a data frame and export it. This was quite the feat, especially starting off. Thankfully I was not the only one who was doing it so it made me feel better about struggling on it for as long as I did. Once I learned it and was able to successfully scrape one of the pages, it became very easy to scrape from the rest of them.
+  
+  One of the main difficulties I had was figuring out how to install the programs and get them to run properly. This was because I had multiple versions of Python installed in different locations on my computer. It was saving it to the default one, but not the one in my editor. To fix this, I had to find the location where they were being downloaded, the location where they needed to be, and just move them from one location to another. This was tricky for me because it took me a while to figure out where it was being downloaded and even after figuring it out and deleting the older version of Python (had to reinstall it because the programs could not install properly through my editor), it was hard to remember where to go to find those files again.
+  
+  Another difficulty I encountered while gathering the data was figuring out how to make Pandas concatenate data frames together and make it look neat. The way I went about this was to save the new lines to a new data frame, concatenate it to the main one, and delete the newer data frame. When it came to combining the larger data frames, I just saved them separately and combined them in R, due to it being more familiar to me and not taking as long between attempts.
+  
+  The last difficulty I will talk about was issues with the scraping itself, mainly figuring out how to loop through the website easily to gather player data. I was running into an issue where the program will just break out of no where and I could never understand why until I looked deeper into it and it turns out that some of the players had a different value for their lines than others. This can be translated to other aspects of the other pages I scraped from as well, but that is the one that really caught me up. To solve this, I had to make a separate check to see if that issue happened and, if so, grab a different line in the website.
+  
+  With the data I collected, I am planning to compare the amount of wins and losses between both teams, the total attendance per season for home games and the total points scored per season and who coached them, as well as something to do with the players that I have not decided yet but it will most likely be comparing the star players for each season (who scored the most points). I have attached below the wins and losses between both teams as a table. This will be the only table and the rest will be graphs.
+  
+```{r, echo=FALSE}
+kable(WL, caption = "Men's and Women's Wins and Losses")
+```
+
+  As for the other three, I am planning to turn the attendance and amount of points scored per season into a time series graph. As for the player data, if I do go with the star player idea, I might compare them to each other based on gender, grab the best one for each, and then put those two against each other to see who was the best player NAU has ever had in the data I have and their stats.
+
+## Expected Outcomes
+  I am expected to find out which of the two basketball teams here at NAU really does better and the reason behind it. I am also expected to find some interesting facts between the teams or about each team separately. This can include if a certain player made a big impact on the performance of the team that year, if a certain coach made the team do better or worse, or if the number of people in attendance made a difference in the team's performance.

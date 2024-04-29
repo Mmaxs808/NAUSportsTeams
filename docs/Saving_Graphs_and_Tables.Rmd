@@ -1,0 +1,309 @@
+---
+title: "Saving Tables"
+author: "Jacob Shigeta"
+date: "2024-04-15"
+output: pdf_document
+---
+```{r, include=FALSE}
+library(tidyverse)
+library(magick)
+library(webshot2)
+library(knitr)
+library(kableExtra)
+library(tinytex)
+```
+
+Variables
+\begin{landscape}
+```{r, echo = FALSE}
+#Making the variables table
+variables <- data.frame(
+  Abbreviation = c("FG", "X3PT", "FT", "ORB", "DRB", "TRB", "AST", "STL", "BLK",
+                   "PTS", "W.L", "OFF", "DEF", "TOT", "AVG", "FGM.A", "PCT",
+                   "X3FG.A", "FTM.A", "PTS", "PPG", "SM", "FGG", "X3P", "X3A",
+                   "FTP", "FTA", "ATT", "PG", "ATR", "POT"),
+  DataSet = c(rep("Players", 10), rep("Games", 5), rep("Games and Team Stats", 4),
+              rep("Team Stats", 12)),
+  Meaning = c("2 Point Shots", "3 Point Shots", "Free Throws",
+              "Offensive Rebounds", "Defensive Rebounds", "Total Rebounds",
+              "Assists", "Steals", "Blocks", "Points", "Win or Loss",
+              "Offensive Rebounds", "Defensive Rebounds", "Total Rebounds",
+              "Average Rebounds", "2 Pointers Made to Attempted",
+              "2 Pointer Percentage", "3 Pointers Made to Attempted",
+              "Free Throws Made to Attempted", "Total Points",
+              "Points Per Game", "Scoring Margin", "2 Pointers Per Game",
+              "3 Pointer Percentage", "3 Pointers Per Game", "Free Throw Percentage",
+              "Free Throws Per Game", "Total Attendance", "Attendance Per Game",
+              "Assist Turnover Ratio", "Points Off Turnovers"),
+  Description = c("Percentage of 2 Pointers Made Throughout Season",
+                  "Percentage of 3 Pointers Made Throughout Season",
+                  "Percentage of Free Throws Made Throughout Season",
+                  "Average Number of Offensive Rebounds Made per Game",
+                  "Average Number of Defensive Rebounds Made per Game",
+                  "Average Number of Total Rebounds Made per Game",
+                  "Average Number of Assists Made per Game",
+                  "Average Number of Steals Made per Game",
+                  "Average Number of Blocks Made per Game",
+                  "Average Number of Points Made per Game",
+                  "Whether NAU Wins or Losses the Game",
+                  "Number of Offensive Rebounds Made that Game",
+                  "Number of Defensive Rebounds Made that Game",
+                  "Number of Total Rebounds Made that Game",
+                  "The Running Average of Rebounds Made for Games that Year",
+                  "The Number of 2 Pointers Made to the Number that was Attempted",
+                  "The Number of 2 Pointers Made Over The Number of 2 Pointers",
+                  "The Number of 3 Pointers Made to the Number that was Attempted",
+                  "The Number of Free Throws Made to the Number that was Attempted",
+                  "Total Points Scored that Season",
+                  "Average Points per Game",
+                  "Difference between NAU's and Opponent's Average Points Per Game",
+                  "Average 2 Pointers Made Per Game",
+                  "The Number of 3 Pointers Made Over The Number of 3 Pointers",
+                  "Average 3 Pointers Made Per Game",
+                  "The Number of Free Throws Made Over The Number of Free Throws",
+                  "Average Free Throws Made Per Game",
+                  "Total Number of People at Attendance for NAU Games",
+                  "Average Attendance at Away Games to Average Attendance at Home Games",
+                  "Number of Assists Recorded by Team Over Number of Turnovers Committed",
+                  "Percentage of Points scored by Team After Forcing Turnover")   )
+
+kable(variables, "latex", caption = "Variable Descriptions") %>%
+  kable_styling(latex_options = c("striped", "condensed"), 
+                html_font = "Calibri") %>%
+  row_spec(0, bold = TRUE)
+```
+
+\end{landscape}
+
+\newpage
+Players Data Set
+```{r, echo = FALSE}
+Players <- read.csv("~/NAUSportsTeams/data/Players.csv")
+
+Players <- Players %>%
+  rename(
+    Year = X,
+    Jersey = X.,
+    FG = FG.,
+    X3PT = X3PT.,
+    FT = FT.,
+    ORB = OREB,
+    DRB = DREB,
+    TRB = REB
+  )
+
+shuffled <- Players[c(1, 122, 108, 309), ]
+
+shuffled <- t(shuffled)
+
+colnames(shuffled) <- shuffled["Player", ]
+
+shuffled <- shuffled[-4, ]
+
+kable(shuffled, caption = "Sample Output of Players Data Set") %>%
+  kable_styling(latex_options = c("striped", "condensed"), 
+                html_font = "Calibri") %>%
+  row_spec(0, bold = TRUE)
+```
+
+\newpage
+Games Data Set
+```{r, echo = FALSE}
+Games <- read.csv("~/NAUSportsTeams/data/Games.csv")
+
+Games <- Games %>%
+  rename(
+    Year = X
+  )
+
+shuffled <- Games[c(1, 260, 277, 690), ]
+
+shuffled <- t(shuffled)
+
+colnames(shuffled) <- shuffled["Opponent", ]
+
+shuffled <- shuffled[-3, ]
+
+kable(shuffled, caption = "Sample Output of Games Data Set") %>%
+  kable_styling(latex_options = c("striped", "condensed"), 
+                html_font = "Calibri") %>%
+  row_spec(0, bold = TRUE)
+```
+
+
+\newpage
+Team Stats Data Set
+```{r, echo = FALSE}
+Coaches <- read.csv("~/NAUSportsTeams/data/Coaches.csv")
+Basketball <- read.csv("~/NAUSportsTeams/data/NAUBasketball.csv")
+
+Team_Stats <- Basketball %>%
+  left_join(Coaches, by = c("Year" = "Year", "Team" = "Team")) %>%
+  select(-c("X.y", "X.x"))
+
+Team_Stats <- Team_Stats %>%
+  rename(
+    Stats = Team.Stats,
+    PTS = Total.Points,
+    PPG = Points.Per.Game,
+    SM = Scoring.Margin,
+    FGM.A = FG..Made.Attempted,
+    PCT = FG..Percentage,
+    FGG = FG..Per.Game,
+    X3FG.A = X3PT..Made.Attempted,
+    X3P = X3PT..Percentage,
+    X3A = X3PT..Per.Game,
+    FTM.A = FT..Made.Attempted,
+    FTP = FT..Percentage,
+    FTA = FT..Per.Game,
+    ATT= Total,
+    PG = Per.Game,
+    ATR = Assist.Turnover.Ratio,
+    POT = Points.Off.Turnovers,
+    Coach = Head.Coach
+  )
+
+shuffled <- Team_Stats[c(1, 9, 10, 21), ]
+
+shuffled <- t(shuffled)
+
+colnames(shuffled) <- c("Mens 2024", "Mens 2016", "Womens 2024", "Womens 2013")
+
+shuffled <- shuffled[-c(2:3), ]
+
+kable(shuffled, caption = "Sample Output of Team Stats Data Set") %>%
+  kable_styling(latex_options = c("striped", "condensed"), 
+                html_font = "Calibri")  %>%
+  row_spec(0, bold = TRUE)
+```
+
+
+\newpage
+Points Table
+```{r, echo = FALSE}
+Coaches <- read.csv("~/NAUSportsTeams/data/Coaches.csv")
+Basketball <- read.csv("~/NAUSportsTeams/data/NAUBasketball.csv")
+
+Team_Stats <- Basketball %>%
+  left_join(Coaches, by = c("Year" = "Year", "Team" = "Team")) %>%
+  select(-c("X.y", "X.x"))
+
+# Grabbing necessary data
+Attendance_Points <- Team_Stats %>%
+  select(c("Year", "Team", "Total.Points"))
+
+# Changing Col. Names
+names(Attendance_Points)[names(Attendance_Points) == "Total.Points"] <- "Total_Points"
+
+# Getting means for each team
+Mens <- Attendance_Points %>%
+  filter(Team == "Mens")
+Womens <- Attendance_Points %>%
+  filter(Team == "Womens")
+
+kable(Womens, caption = "Points Scored by NAU Womens Team for each Year") %>%
+  kable_styling(latex_options = c("striped", "condensed"), 
+                html_font = "Calibri") %>%
+  row_spec(0, bold = TRUE)
+```
+
+```{r, echo = FALSE}
+
+kable(Mens, caption = "Points Scored by NAU Mens Team for each Year") %>%
+  kable_styling(latex_options = c("striped", "condensed"), 
+                html_font = "Calibri") %>%
+  row_spec(0, bold = TRUE)
+```
+
+
+\newpage
+Games Scored Over 100 Pts
+```{r, echo = FALSE}
+Games <- read.csv("~/NAUSportsTeams/data/Games.csv")
+
+# Grabbing the game data
+Outlier_Games <- Games %>%
+  select(c(X, Team, Opponent, Score)) %>%
+  rename(Year = X)
+
+# Points First
+# Getting Home or Away
+Outlier_Games[c("Home_or_Away", "Opposing_Team")] <- str_split_fixed(
+  Outlier_Games$Opponent, ' ', 2)
+
+Outlier_Games <- subset(Outlier_Games, select = -Opponent)
+
+Outlier_Games$Home_or_Away[Outlier_Games$Home_or_Away == "at"] <- "Away"
+Outlier_Games$Home_or_Away[Outlier_Games$Home_or_Away == "vs"] <- "Home"
+
+# Getting Scores by Team
+Outlier_Games[c("NAU_Score", "Their_Score")] <- str_split_fixed(
+  Outlier_Games$Score, '-', 2)
+
+Outlier_Games <- subset(Outlier_Games, select = -Score)
+
+Outlier_Games <- Outlier_Games %>%
+  mutate(across(c(NAU_Score, Their_Score), function(x) as.numeric(x)))
+
+# Grabbing games with us over 100 pts
+Over100 <- Outlier_Games %>%
+  filter(NAU_Score >= 100)
+
+kable(Over100, caption = "Games When we Scored Over 100 Points") %>%
+  kable_styling(latex_options = c("striped", "condensed"), 
+                html_font = "Calibri")  %>%
+  row_spec(0, bold = TRUE)
+```
+
+
+\newpage
+P-Value Tests
+```{r, echo = FALSE}
+library(reshape2)
+library(dplyr)
+library(tidyverse)
+
+Player_Stats <- melt(Players, id.vars = "Team",
+                     measure.vars = 7:16 )
+
+numVars <- n_distinct(Player_Stats$variable)
+
+columnNames <- c("variable", "estimate", "t_stat", "p_value",
+                 "intercept_estimate", "intercept_t_stat", "intercept_p_value")
+
+tests <- data.frame(matrix(nrow = 1, ncol = length(columnNames) ) )
+colnames(tests) <- columnNames
+
+for(num in 1:numVars)
+{
+  column <- colnames(Players[num + 6])
+
+  df <- Player_Stats %>%
+    filter(variable == column) %>%
+    select(-variable)
+
+  model <- lm(value ~ Team, data = df)
+
+  t_stats <- summary(model)$coefficients[,3]
+  p_values <-summary(model)$coefficients[,4]
+
+  tests <- rbind(tests, list(column, model$coefficients[2], t_stats[2], p_values[2],
+                             model$coefficients[1], t_stats[1], p_values[1]))
+
+  num <- num + 1
+
+}
+
+tests <- tests %>%
+  filter(!is.na(variable))
+
+kable(tests, caption = "P-value Tests") %>%
+  kable_styling(latex_options = c("striped", "condensed"), 
+                html_font = "Calibri")  %>%
+  row_spec(0, bold = TRUE)
+```
+
+
+
+
+

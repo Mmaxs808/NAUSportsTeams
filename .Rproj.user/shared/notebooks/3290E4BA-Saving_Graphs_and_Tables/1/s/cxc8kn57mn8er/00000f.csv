@@ -1,0 +1,17 @@
+"0","library(kableExtra)
+"
+"2","
+Attaching package: ‘kableExtra’
+
+"
+"2","The following object is masked from ‘package:dplyr’:
+
+    group_rows
+
+"
+"2","Warning in dev.off() :"
+"2","T"
+"2"," unable to open TIFF file 'docs/PvAGraph.png'
+"
+"2","IFFOpen: docs/PvAGraph.png: Cannot open.
+"

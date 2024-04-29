@@ -1,0 +1,27 @@
+{
+    "id": "411F1810",
+    "path": "~/NAUSportsTeams/R/player_averages_analysis.R",
+    "project_path": "R/player_averages_analysis.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1713895650752.0,
+    "source_on_save": false,
+    "relative_order": 7,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "35,18",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1713395207,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1713395207,
+    "read_only": false,
+    "read_only_alternatives": []
+}

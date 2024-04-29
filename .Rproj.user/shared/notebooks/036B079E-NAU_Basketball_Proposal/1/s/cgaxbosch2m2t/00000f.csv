@@ -1,0 +1,23 @@
+"0","library(tidyverse)"
+"0","library(knitr)"
+"0","library(kableExtra)"
+"2","Warning: package ‘kableExtra’ was built under R version 4.3.3"
+"2","
+Attaching package: ‘kableExtra’
+
+"
+"2","The following object is masked from ‘package:dplyr’:
+
+    group_rows
+
+"
+"0","# Combining the Coaches and Basketball DFs"
+"0","Coaches <- read.csv(""~/NAUSportsTeams/data/Coaches.csv"")"
+"0","Basketball <- read.csv(""~/NAUSportsTeams/data/NAUBasketball.csv"")"
+"0","Players <- read.csv(""~/NAUSportsTeams/data/Players.csv"")"
+"0","Games <- read.csv(""~/NAUSportsTeams/data/Games.csv"")"
+"0",""
+"0","Team_Stats <- Basketball %>%"
+"0","  left_join(Coaches, by = c(""Year"" = ""Year"", ""Team"" = ""Team"")) %>%"
+"0","  select(-c(""X.y"", ""X.x""))"
+"0",""
